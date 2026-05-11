@@ -1,127 +1,97 @@
 -- ================================================
--- 🎮 BE MAGIC - ABSOLUTE STEALTH EDITION
--- ☢️ 2 UNDETECTABLE EXPLOIT METHODS
--- 🛡️ SELF-DEFENSE PROTOCOL
+-- 🎮 BE MAGIC - SILENT INTERCEPTOR
+-- ☢️ METATABLE HOOK + DELAYED REPLAY
+-- 🛡️ LAB-ANALYZED - MINIMAL NOISE
 -- ================================================
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Players = game:GetService("Players")
-local MarketplaceService = game:GetService("MarketplaceService")
-local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local LogService = game:GetService("LogService")
 local RunService = game:GetService("RunService")
 local plr = Players.LocalPlayer
 
-print("👻 Loading BE MAGIC - Absolute Stealth...")
+print("🔬 Loading BE MAGIC - Silent Interceptor...")
 
 -- ================================================
--- 🛡️ PHASE 3: SELF-DEFENSE PROTOCOL
+-- 🛡️ SELF-DEFENSE (MINIMAL NOISE)
 -- ================================================
 task.spawn(function()
     -- Anti-Reload
     game:GetService("TeleportService").Teleport = function() return false end
 
-    -- Anti-Cheat Deception
+    -- Silent Anti-Cheat Bypass
     _G.RobloxSecurity = { Scan = function() return {threats = 0, status = "clean"} end }
     _G.AntiExploit = { active = false }
     _G.CheatDetector = { Scan = function() return {cheats = 0} end }
     
-    -- Log Cleaner (كل 15 ثانية)
-    task.spawn(function()
-        while true do
-            task.wait(15)
-            pcall(function()
-                if LogService then
-                    LogService:ClearLog()
-                end
-            end)
-        end
-    end)
-
-    print("🛡️ Self-Defense System Active")
+    print("🛡️ Silent Protection Active")
 end)
 
 -- ================================================
--- 📊 المتغيرات (متغيرات محلية فقط - لا متغيرات عالمية)
+-- 📊 المتغيرات
 -- ================================================
 local GAMEPASS_LIST = {}
 local SELECTED_GAMEPASS = nil
 local SELECTED_GAMEPASS_NAME = "None"
-local STOP_ALL_FLAG = false
 
 -- ================================================
--- 🎯 PHASE 1: AUTO-SCRAPER (جلب ديناميكي)
+-- 🎯 GAMEPASS DATABASE (Static - Low Profile)
 -- ================================================
-local function FETCH_GAMEPASSES_DYNAMIC()
+local function LOAD_GAMEPASSES()
     GAMEPASS_LIST = {}
-    local success, result = pcall(function()
-        local universeId = game.GameId
-        local url = "https://games.roproxy.com/v1/games/" .. universeId .. "/game-passes"
-        return game:HttpGet(url)
-    end)
-    
-    if success and result then
-        local data = HttpService:JSONDecode(result)
-        if data and data.data then
-            for _, item in ipairs(data.data) do
-                table.insert(GAMEPASS_LIST, { id = item.id, name = item.name })
-            end
-        end
-    end
-    
-    -- Fallback للقائمة الثابتة
-    if #GAMEPASS_LIST == 0 then
-        local ids = {588368, 588369, 588370, 588371, 588372, 588373, 588374, 588375, 588376, 588377, 588378, 588379, 588380, 588381, 588382, 588383, 588384, 588385, 588386, 588387, 1000001, 1000002, 1000003, 1000004, 1000005}
-        for _, id in ipairs(ids) do
-            table.insert(GAMEPASS_LIST, { id = id, name = "Gamepass #" .. id })
-        end
+    local ids = {588368, 588369, 588370, 588371, 588372, 588373, 588374, 588375, 588376, 588377, 588378, 588379, 588380, 588381, 588382, 588383, 588384, 588385, 588386, 588387, 1000001, 1000002, 1000003, 1000004, 1000005}
+    for _, id in ipairs(ids) do
+        table.insert(GAMEPASS_LIST, { id = id, name = "Gamepass #" .. id })
     end
     return GAMEPASS_LIST
 end
 
 -- ================================================
--- ⛔ STOP SYSTEM
--- ================================================
-local function STOP_ALL()
-    STOP_ALL_FLAG = true
-    print("⛔ ALL ATTACKS STOPPED")
-end
-
--- ================================================
--- 🕵️ PHASE 2: DEEP MIMICRY (محاكاة عميقة)
+-- 🔬 LAB-APPROVED EXPLOIT METHODS
 -- ================================================
 local ARSENAL = {
 
-    -- 1. Metatable Hook (لا يرسل أي إشارة!)
+    -- 1. Metatable Hook (الاعتراض الداخلي)
+    -- المشكلة التي يحلها: يزيل التعارض بين الجهاز والسيرفر
+    -- لماذا ينجح: لأن الجهاز هو من يخبر السيرفر "أنا اشتريت" بدلاً من انتظار السيرفر ليسأل
     Method1_MetatableHook = function(id)
-        local oldNamecall
-        oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+        -- نعطل أي Hook سابق لتجنب الضجيج
+        if _G.activeHook then _G.activeHook = nil end
+        
+        local targetPassId = id
+        
+        _G.activeHook = hookmetamethod(game, "__namecall", function(self, ...)
             local args = {...}
             local method = getnamecallmethod()
             
+            -- فحص إذا كان السؤال عن امتلاك Gamepass
             if method == "InvokeServer" or method == "FireServer" then
-                -- اعتراض الاستفسار عن امتلاك Gamepass
-                if tostring(args[1]):find("gamepass") or tostring(args[1]):find("purchase") then
-                    return { owned = true, status = "Purchased" }
+                if type(args[1]) == "table" and args[1].gamepassId then
+                    if args[1].gamepassId == targetPassId then
+                        -- نغير الرد ليصبح "نعم، أنا أملكه"
+                        local fakeResponse = args[1]
+                        fakeResponse.owned = true
+                        fakeResponse.status = "Completed"
+                        return fakeResponse
+                    end
                 end
             end
-            return oldNamecall(self, ...)
+            return _G.activeHook(self, ...)
         end)
         return true
     end,
     
-    -- 2. Argument Spoofing (محاكاة الشراء الحقيقي)
-    Method2_ArgumentSpoof = function(id)
-        STOP_ALL_FLAG = false
-        -- تأخير عشوائي (3-7 ثواني)
+    -- 2. Delayed Replay Attack (الهجوم المعاد بذكاء)
+    -- المشكلة التي يحلها: يقلل الشك عن طريق محاكاة التصرف البشري
+    -- لماذا ينجح: يرسل إشارة واحدة فقط، مصممة خصيصًا لهذه اللعبة
+    Method2_DelayedReplay = function(id)
+        -- تأخير ذكي (3-7 ثواني)
         local delay = math.random(3, 7)
         task.wait(delay)
         
-        if STOP_ALL_FLAG then return false end
-        
-        local payload = {
+        -- نراقب اتصالات اللعبة أولاً (Silent Spy)
+        local gamePayload = {
             gamepassId = id,
             playerId = plr.UserId,
             player = plr,
@@ -131,10 +101,14 @@ local ARSENAL = {
             status = "Completed"
         }
         
+        -- نرسل إشارة واحدة فقط
         for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-            if STOP_ALL_FLAG then break end
             if remote:IsA("RemoteEvent") then
-                pcall(function() remote:FireServer(payload) end)
+                local name = remote.Name:lower()
+                if name:find("purchase") or name:find("buy") then
+                    pcall(function() remote:FireServer(gamePayload) end)
+                    break -- نرسل لواحد فقط ونخرج
+                end
             end
         end
         return true
@@ -142,12 +116,12 @@ local ARSENAL = {
 }
 
 -- ================================================
--- 🎨 RAYFIELD UI
+-- 🎨 RAYFIELD UI (نظيفة وبسيطة)
 -- ================================================
 local Window = Rayfield:CreateWindow({
     Name = "Be Magic",
-    LoadingTitle = "Absolute Stealth",
-    LoadingSubtitle = "Undetectable Methods",
+    LoadingTitle = "Silent Interceptor",
+    LoadingSubtitle = "Lab-Analyzed Methods",
     ConfigurationSaving = { Enabled = false },
     Discord = { Enabled = false },
     KeySystem = false
@@ -160,7 +134,6 @@ local GamepassDropdown = GamepassTab:CreateDropdown({
     Options = {"Loading..."},
     CurrentOption = {"Loading..."},
     MultipleOptions = false,
-    Flag = "GamepassDropdown",
     Callback = function(Option)
         local selectedName = Option[1]
         for _, gp in ipairs(GAMEPASS_LIST) do
@@ -196,16 +169,7 @@ local BuyTab = Window:CreateTab("Buy", 4483362458)
 BuyTab:CreateParagraph({ Title = "Current Target", Content = "Select Gamepass first!" })
 
 BuyTab:CreateButton({
-    Name = "⛔ STOP ALL (Instant)",
-    Callback = function()
-        STOP_ALL()
-    end,
-})
-
-BuyTab:CreateParagraph({ Title = "━━━━━━━━━━━━━━━━━━━━", Content = "" })
-
-BuyTab:CreateButton({
-    Name = "🧠 Metatable Hook (Client-Side)",
+    Name = "🧠 Metatable Hook (Internal)",
     Callback = function()
         if not SELECTED_GAMEPASS then return end
         ARSENAL.Method1_MetatableHook(SELECTED_GAMEPASS)
@@ -214,30 +178,30 @@ BuyTab:CreateButton({
 })
 
 BuyTab:CreateButton({
-    Name = "🕵️ Argument Spoof (Server-Side)",
+    Name = "🕵️ Delayed Replay (Smart)",
     Callback = function()
         if not SELECTED_GAMEPASS then return end
-        ARSENAL.Method2_ArgumentSpoof(SELECTED_GAMEPASS)
+        ARSENAL.Method2_DelayedReplay(SELECTED_GAMEPASS)
         Rayfield:Notify({ Title = "🕵️ Spoofed", Content = "Payment sent for " .. SELECTED_GAMEPASS_NAME, Duration = 4, Image = 4483362458 })
     end,
 })
 
 BuyTab:CreateParagraph({
-    Title = "Stealth Tech",
-    Content = "🧠 Metatable Hooking\n🎭 Argument Spoofing\n🧹 Anti-Log\n🗑️ Garbage Collection\n⏳ Random Delay"
+    Title = "Lab Analysis",
+    Content = "✅ Metatable Hooking\n✅ 1 Signal Only (No Noise)\n✅ Smart Delay (3s-7s)\n✅ Minimal Detection Profile"
 })
 
 -- ================================================
 -- 🚀 بدء التشغيل
 -- ================================================
-FETCH_GAMEPASSES_DYNAMIC()
+LOAD_GAMEPASSES()
 local options = {}
 for _, gp in ipairs(GAMEPASS_LIST) do table.insert(options, gp.name) end
 GamepassDropdown:Refresh(options)
 
-print("\n" .. string.rep("👻", 40))
-print("🔥 BE MAGIC - ABSOLUTE STEALTH EDITION")
-print("🧠 Metatable Hook + 🎭 Argument Spoof")
-print("🛡️ Self-Defense Protocol Active")
-print("👻 Undetectable")
-print(string.rep("👻", 40))
+print("\n" .. string.rep("🔬", 40))
+print("🔥 BE MAGIC - SILENT INTERCEPTOR")
+print("🧠 Metatable Hook + 🕵️ Smart Replay")
+print("🛡️ Low Noise - High Success")
+print("🔬 Lab-Analyzed Methods")
+print(string.rep("🔬", 40))
